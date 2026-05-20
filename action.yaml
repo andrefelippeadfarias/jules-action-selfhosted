@@ -11,6 +11,11 @@ inputs:
     required: false
     type: string
     default: http://127.0.0.1:11434
+  ollama_model:
+    description: "Modelo Ollama a ser usado (default kimi-k2.6:cloud)"
+    required: false
+    type: string
+    default: kimi-k2.6:cloud
   prompt:
     description: 'The prompt to pass to Jules'
     required: true
@@ -78,6 +83,9 @@ runs:
           }' > jules_payload.json
 
     - name: Invoke Ollama (Jules wrapper)
+      env:
+        OLLAMA_HOST: ${{ inputs.ollama_host }}
+        OLLAMA_MODEL: ${{ inputs.ollama_model }}
       shell: bash
       run: |
         python3 scripts/jules_ollama.py prompt.txt
