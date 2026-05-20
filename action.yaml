@@ -28,10 +28,7 @@ inputs:
     required: false
     type: string
     default: 'main'
-  jules_api_key:
-    description: 'The Jules API key to use for authentication'
-    required: true
-    type: string
+
 
 runs:
   using: "composite"
@@ -80,14 +77,26 @@ runs:
             "automationMode": "AUTO_CREATE_PR"
           }' > jules_payload.json
 
-    - name: Invoke Jules
+    - name: Invoke Ollama (Jules wrapper)
       shell: bash
       run: |
         python3 scripts/jules_ollama.py prompt.txt
+
+    - name: Create PR (optional)
       shell: bash
       run: |
-        curl 'https://jules.googleapis.com/v1alpha/sessions' \
-          -X POST \
-          -H "Content-Type: application/json" \
-          -H "X-Goog-Api-Key: ${{ inputs.jules_api_key }}" \
-          -d @jules_payload.json
+        git commit -m "Jules: Generated changes" || true
+        # Attempt to push and capture the PR URL if it is a self‑hosted runner
+        PR_URL=$(git push origin juls-generated) || true
+        echo "PR_URL=$PR_URL" >> $GITHUB_ENV
+
+    - name: Report to Paperclip
+      if: env.PR_URL != ''
+      env:
+        PR_URL: ${{ env.PR_URL }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        PAPERCLIP_API_KEY: ${{ secrets.PAPERCLIP_API_KEY }}
+        PAPERCLIP_URL: ${{ secrets.PAPERCLIP_URL }}
+      shell: bash
+      run: |
+        python3 scripts/paperclip_report.py
