@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-import os, sys, json, pathlib, subprocess, requests
+import os
+import sys
+import json
+import pathlib
+import subprocess
+import requests
 
 # Configurable host (default local Ollama)
 OLLAMA_URL = os.getenv('OLLAMA_HOST', 'http://127.0.0.1:11434')
@@ -25,7 +30,7 @@ def main():
     prompt = prompt_path.read_text()
     code = generate_code(prompt)
     # Write generated code for debugging
-    Path('jules_output.txt').write_text(code)
+    pathlib.Path('jules_output.txt').write_text(code)
     # Create a temporary branch for the changes (GitHub Action will handle PR creation later)
     # Here we just stage the generated file so the downstream step can create a diff/PR.
     pathlib.Path('generated_code.txt').write_text(code)
