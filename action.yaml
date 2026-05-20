@@ -6,6 +6,11 @@ branding:
   color: 'purple'
 
 inputs:
+  ollama_host:
+    description: "Ollama host URL (default http://127.0.0.1:11434)"
+    required: false
+    type: string
+    default: http://127.0.0.1:11434
   prompt:
     description: 'The prompt to pass to Jules'
     required: true
@@ -76,6 +81,9 @@ runs:
           }' > jules_payload.json
 
     - name: Invoke Jules
+      shell: bash
+      run: |
+        python3 scripts/jules_ollama.py prompt.txt
       shell: bash
       run: |
         curl 'https://jules.googleapis.com/v1alpha/sessions' \
