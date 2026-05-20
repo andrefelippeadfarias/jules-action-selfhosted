@@ -9,7 +9,7 @@ import requests
 # Configurable host (default local Ollama)
 OLLAMA_URL = os.getenv('OLLAMA_HOST', 'http://127.0.0.1:11434')
 # Choose a model that exists locally; adjust if needed
-MODEL = os.getenv('OLLAMA_MODEL', 'deepseek-v4-flash')
+MODEL = os.getenv('OLLAMA_MODEL', 'kimi-k2.6:cloud')
 
 def generate_code(prompt: str) -> str:
     payload = {
